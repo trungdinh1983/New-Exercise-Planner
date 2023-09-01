@@ -1,35 +1,38 @@
-const faker = require("faker");
+const { faker } = require("@faker-js/faker");
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
     const demoUsers = [];
 
-    // 9 random users from Faker
     for (let i = 0; i < 9; i++) {
-      demoUsers.push({
-        name: faker.name.findName(),
+      const user = {
+        name: faker.person.fullName(),
         email: faker.internet.email(),
-        password: faker.internet.password(),
+        password: "password",
         isAdmin: false,
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      };
+
+      demoUsers.push(user);
     }
 
-    // 1 admin user (hard-coded)
-    demoUsers.push({
+    // Add 1 admin user
+    const admin = {
       name: "Admin",
       email: "admin@test.com",
-      password: "TestAdmin123#", // Replace with hashed password if using bcrypt
+      password: "TestAdmin123#",
       isAdmin: true,
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    };
 
-    return queryInterface.bulkInsert("Users", demoUsers, {});
+    demoUsers.push(admin);
+
+    return queryInterface.bulkInsert("Users", demoUsers);
   },
 
-  down: (queryInterface, Sequelize) => {
+  down: async (queryInterface, Sequelize) => {
     return queryInterface.bulkDelete("Users", null, {});
   },
 };
