@@ -1,73 +1,41 @@
-// Required modules
-require("dotenv").config(); // load environment variables from .env
+// Load environment variables
+require("dotenv").config();
+
+// Import necessary modules
 const express = require("express");
-const bodyParser = require("body-parser");
-const session = require("express-session");
 const passport = require("passport");
-const { Sequelize } = require("sequelize");
-const config = require("./config.json");
+const session = require("express-session");
+const { Sequelize } = require("sequelize"); // Import Sequelize
 
-// Middleware
-const authMiddleware = require("./middleware/authMiddleware");
-const adminMiddleware = require("./middleware/adminMiddleware");
+// Import custom config
+const config = require("./config");
+const dbConfigs = require("./config/database"); // Import your new database config
 
-// Setup
+// Setup the app and env
 const app = express();
 const env = process.env.NODE_ENV || "development";
-const dbConfig = config[env];
+const dbConfig = dbConfigs[env]; // Choose the correct DB settings
 
-// Middleware
-app.use(bodyParser.json());
-app.use(
-  session({
-    secret: "supersecretkey",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+// Initialize the database
+const sequelize = new Sequelize(dbConfig); // Use your new database config here
 
+// Use middlewares
+app.use(express.json());
+app.use(session(config.session)); // Assuming you have session config in './config/index.js'
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Custom Middleware
-app.use(authMiddleware); // Handles Authentication and Admin functionalities
-app.use(adminMiddleware); // Handles Admin functionalities
+// Import and use custom middlewares and routes
+const authMiddleware = require("./middleware/auth");
+const errorHandler = require("./middleware/errorHandler");
+const routes = require("./routes"); // Import all routes from a routes/index.js file
 
-// Sequelize setup
-const sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, {
-  host: dbConfig.host,
-  dialect: dbConfig.dialect,
-});
+app.use(authMiddleware);
+app.use(routes); // Using the imported routes
+app.use(errorHandler); // Catching and handling errors
 
-// Import Routes
-const userRoutes = require("./routes/userRoutes"); // Will handle Profile, Authentication
-const workoutRoutes = require("./routes/workoutRoutes"); // Will handle Stats, Favorites
-const exerciseRoutes = require("./routes/exerciseRoutes"); // Will handle Search, Favorites
-const trendRoutes = require("./routes/trendRoutes"); // Will handle Stats
-const workoutExerciseRoutes = require("./routes/workoutExerciseRoutes"); // Will handle Lifestyle tips
-const instructionRoutes = require("./routes/instructionRoutes"); // Will handle Notifications
-
-// Use Routes
-app.use("/users", userRoutes);
-app.use("/workouts", workoutRoutes);
-app.use("/exercises", exerciseRoutes);
-app.use("/trends", trendRoutes);
-app.use("/workout-exercises", workoutExerciseRoutes);
-app.use("/instructions", instructionRoutes);
-
-// Error Handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send({
-    status: 500,
-    message: err.message,
-    body: {},
-  });
-});
-
-// Starting the server
 sequelize.sync().then(() => {
-  app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
 });
