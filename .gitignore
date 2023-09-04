@@ -1,4 +1,3 @@
-# Ignored files and directories
-node_modules/
-dist/
-.env            # Add this line to exclude .env file
+# .gitignore
+.env
+ # Add this line to exclude .env file
