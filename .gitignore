@@ -1,0 +1,4 @@
+# Ignored files and directories
+node_modules/
+dist/
+.env            # Add this line to exclude .env
