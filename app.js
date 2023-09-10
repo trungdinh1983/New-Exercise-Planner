@@ -5,37 +5,56 @@ require("dotenv").config();
 const express = require("express");
 const passport = require("passport");
 const session = require("express-session");
-const { Sequelize } = require("sequelize"); // Import Sequelize
+const { Sequelize } = require("sequelize");
 
 // Import custom config
 const config = require("./config");
-const dbConfigs = require("./config/database"); // Import your new database config
+const dbConfigs = require("./config/database");
 
-// Setup the app and env
+// Import all routes from a routes/index.js file
+const userRoutes = require("./routes/userRoutes");
+const workoutRoutes = require("./routes/workoutRoutes");
+const exerciseRoutes = require("./routes/exerciseRoutes");
+const trendRoutes = require("./routes/trendRoutes");
+const instructionRoutes = require("./routes/instructionRoutes");
+const workoutExerciseRoutes = require("./routes/workoutExerciseRoutes");
+
+// Setup the app and environment
 const app = express();
 const env = process.env.NODE_ENV || "development";
-const dbConfig = dbConfigs[env]; // Choose the correct DB settings
+const PORT = process.env.PORT || 3000; // Don't forget to set the PORT. Is it .env?
+const dbConfig = dbConfigs[env];
 
 // Initialize the database
-const sequelize = new Sequelize(dbConfig); // Use your new database config here
+const sequelize = new Sequelize(dbConfig);
 
 // Use middlewares
 app.use(express.json());
-app.use(session(config.session)); // Assuming you have session config in './config/index.js'
+app.use(session(config.session)); // Config in session config in './config/index.js'?
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Import and use custom middlewares and routes
+// Import and use custom middlewares
 const authMiddleware = require("./middleware/auth");
 const errorHandler = require("./middleware/errorHandler");
-const routes = require("./routes"); // Import all routes from a routes/index.js file
 
+// Add the middlewares to the app
 app.use(authMiddleware);
-app.use(routes); // Using the imported routes
-app.use(errorHandler); // Catching and handling errors
 
+// Use routes
+app.use("/user", userRoutes);
+app.use("/workout", workoutRoutes);
+app.use("/exercise", exerciseRoutes);
+app.use("/trend", trendRoutes);
+app.use("/instruction", instructionRoutes);
+app.use("/workoutExercise", workoutExerciseRoutes);
+
+// Error handling
+app.use(errorHandler);
+
+// Sync DB and start the app
 sequelize.sync().then(() => {
   app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is up and running on port ${PORT}`);
   });
 });

@@ -1,9 +1,9 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-class User extends Model {}
+class Exercise extends Model {}
 
-User.init(
+Exercise.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -11,18 +11,11 @@ User.init(
       autoIncrement: true,
     },
     name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password_digest: DataTypes.STRING,
-    deletedAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
   },
   {
     sequelize,
-    modelName: "User",
-    paranoid: true,
+    modelName: "Exercise",
   }
 );
 
-module.exports = User;
+module.exports = Exercise;

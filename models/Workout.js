@@ -1,18 +1,20 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-class User extends Model {}
+class Workout extends Model {}
 
-User.init(
+Workout.init(
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
+    user_id: DataTypes.INTEGER,
     name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password_digest: DataTypes.STRING,
+    warmup_time: DataTypes.INTEGER,
+    workout_time: DataTypes.INTEGER,
+    custom: DataTypes.BOOLEAN,
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -20,9 +22,9 @@ User.init(
   },
   {
     sequelize,
-    modelName: "User",
+    modelName: "Workout",
     paranoid: true,
   }
 );
 
-module.exports = User;
+module.exports = Workout;
