@@ -8,5 +8,5 @@ test("should load the correct database configuration based on NODE_ENV", () => {
   expect(config.username).toBe("postgres");
   expect(config.password).toBe(process.env.DB_PASSWORD);
   expect(config.database).toBe("trungmacbook");
-  // ... you can add more here
+  // ... add more here
 });

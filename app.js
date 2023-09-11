@@ -11,7 +11,7 @@ const { Sequelize } = require("sequelize");
 const config = require("./config");
 const dbConfigs = require("./config/database");
 
-// Import all routes from a routes/index.js file
+// Import all routes from the routes folder
 const userRoutes = require("./routes/userRoutes");
 const workoutRoutes = require("./routes/workoutRoutes");
 const exerciseRoutes = require("./routes/exerciseRoutes");
@@ -22,7 +22,7 @@ const workoutExerciseRoutes = require("./routes/workoutExerciseRoutes");
 // Setup the app and environment
 const app = express();
 const env = process.env.NODE_ENV || "development";
-const PORT = process.env.PORT || 3000; // Don't forget to set the PORT. Is it .env?
+const PORT = process.env.PORT || 3000;
 const dbConfig = dbConfigs[env];
 
 // Initialize the database
@@ -30,7 +30,7 @@ const sequelize = new Sequelize(dbConfig);
 
 // Use middlewares
 app.use(express.json());
-app.use(session(config.session)); // Config in session config in './config/index.js'?
+app.use(session(config.session));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -53,8 +53,13 @@ app.use("/workoutExercise", workoutExerciseRoutes);
 app.use(errorHandler);
 
 // Sync DB and start the app
-sequelize.sync().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server is up and running on port ${PORT}`);
+sequelize
+  .sync()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is up and running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
   });
-});
