@@ -1,4 +1,5 @@
-const { faker } = require("@faker-js/faker");
+const faker = require("@faker-js/faker");
+const { User } = require("../models");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -8,10 +9,8 @@ module.exports = {
       const user = {
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        password: "password",
-        isAdmin: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        password_digest: "password", // Note: Use password_digest as per your model
+        // You can omit isAdmin, createdAt, updatedAt because Sequelize handles them automatically
       };
 
       demoUsers.push(user);
@@ -21,18 +20,24 @@ module.exports = {
     const admin = {
       name: "Admin",
       email: "admin@test.com",
-      password: "TestAdmin123#",
-      isAdmin: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      password_digest: "TestAdmin123#", // Use password_digest
     };
 
     demoUsers.push(admin);
 
-    return queryInterface.bulkInsert("Users", demoUsers);
+    // Use the User model to bulk insert
+    await User.bulkCreate(demoUsers);
+
+    return Promise.resolve();
   },
 
   down: async (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete("Users", null, {});
+    // To delete all users, you can use the truncate method provided by Sequelize
+    await User.destroy({
+      where: {}, // Delete all records
+      truncate: true, // Reset the auto-increment counter
+    });
+
+    return Promise.resolve();
   },
 };

@@ -18,7 +18,7 @@ if (config.use_env_variable) {
 }
 
 // Import custom models
-const User = require("./User")(sequelize, Sequelize.DataTypes);
+const User = require("./User.js")(sequelize, Sequelize.DataTypes);
 const Workout = require("./Workout")(sequelize, Sequelize.DataTypes);
 const Exercise = require("./Exercise")(sequelize, Sequelize.DataTypes);
 const Trend = require("./Trend")(sequelize, Sequelize.DataTypes);
