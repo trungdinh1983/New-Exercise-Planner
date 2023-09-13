@@ -5,7 +5,8 @@ const path = require("path");
 const Sequelize = require("sequelize");
 const process = require("process");
 const env = process.env.NODE_ENV || "development";
-const config = require(__dirname + "/../config/config.json")[env];
+const dbConfig = require("../config/database.js"); // Importing database.js
+const config = dbConfig[env]; // Using database.js settings
 const db = {};
 
 // Initialize Sequelize
