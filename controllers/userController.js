@@ -11,7 +11,7 @@ exports.createUser = async (req, res) => {
     const newUser = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password_digest: hashedPassword,
     });
 
     res.status(201).json(newUser);
@@ -50,6 +50,22 @@ exports.deleteUserProfile = async (req, res) => {
     res.status(204).end();
   } catch (error) {
     res.status(500).json({ error: "Could not delete user profile" });
+  }
+};
+
+// Update user password
+exports.updateUserPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await req.user.update({
+      password_digest: hashedPassword,
+    });
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Could not update password" });
   }
 };
 
