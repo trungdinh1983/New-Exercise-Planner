@@ -45,7 +45,7 @@ Here's what each package does:
 
 ## Installation 🚀
 
-To install all these packages, open your terminal and run:
+To install and check all these packages, open your terminal and run:
 
 ```bash
 npm install @faker-js/faker bcrypt bcryptjs connect-flash dotenv express-session express jest passport-local passport pg-hstore pg postman sequelize-soft-delete sequelize swagger-ui-express winston
