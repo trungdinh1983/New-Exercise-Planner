@@ -2,7 +2,7 @@
 const { Model, DataTypes } = require("sequelize");
 
 // Importing the database configuration
-const sequelize = require("../config/database");
+const { sequelize } = require("./index");
 
 // Defining the User class, extending Sequelize's Model class
 class User extends Model {}

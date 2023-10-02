@@ -3,10 +3,9 @@
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
-const process = require("process");
 const env = process.env.NODE_ENV || "development";
-const dbConfig = require("../config/database.js"); // Importing database.js
-const config = dbConfig[env]; // Using database.js settings
+const dbConfig = require("../config/database.js");
+const config = dbConfig[env];
 const db = {};
 
 // Initialize Sequelize
@@ -18,14 +17,21 @@ if (config.use_env_variable) {
 }
 
 // Import custom models
-const User = require("./User.js")(sequelize, Sequelize.DataTypes);
-const Workout = require("./Workout")(sequelize, Sequelize.DataTypes);
-const Exercise = require("./Exercise")(sequelize, Sequelize.DataTypes);
-const Trend = require("./Trend")(sequelize, Sequelize.DataTypes);
-const Instruction = require("./Instruction")(sequelize, Sequelize.DataTypes);
-const WorkoutExercise = require("./WorkoutExercise")(sequelize, Sequelize.DataTypes);
+const initUser = require("./User.js");
+const initWorkout = require("./Workout");
+const initExercise = require("./Exercise");
+const initTrend = require("./Trend");
+const initInstruction = require("./Instruction");
+const initWorkoutExercise = require("./WorkoutExercise");
 
-// Make relationships
+const User = initUser(sequelize, Sequelize.DataTypes);
+const Workout = initWorkout(sequelize, Sequelize.DataTypes);
+const Exercise = initExercise(sequelize, Sequelize.DataTypes);
+const Trend = initTrend(sequelize, Sequelize.DataTypes);
+const Instruction = initInstruction(sequelize, Sequelize.DataTypes);
+const WorkoutExercise = initWorkoutExercise(sequelize, Sequelize.DataTypes);
+
+// Define relationships
 User.hasMany(Workout);
 Workout.belongsTo(User);
 
@@ -44,7 +50,7 @@ Instruction.belongsTo(Workout);
 Exercise.hasMany(Instruction);
 Instruction.belongsTo(Exercise);
 
-// Add custom models to db object
+// Add models to db object for external usage
 db.User = User;
 db.Workout = Workout;
 db.Exercise = Exercise;
@@ -52,9 +58,9 @@ db.Trend = Trend;
 db.Instruction = Instruction;
 db.WorkoutExercise = WorkoutExercise;
 
-// Final Sequelize and db setup
+// Add Sequelize instance and Sequelize constructor to db
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// Export the db object which now includes both Sequelize and custom models
+// Export the db object
 module.exports = db;

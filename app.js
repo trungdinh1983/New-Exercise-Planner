@@ -5,11 +5,10 @@ require("dotenv").config();
 const express = require("express");
 const passport = require("passport");
 const session = require("express-session");
-const { Sequelize } = require("sequelize");
 
-// Import custom config
+// Import custom config and models
 const config = require("./config");
-const dbConfigs = require("./config/database");
+const db = require("./models");
 
 // Import all routes from the routes folder
 const userRoutes = require("./routes/userRoutes");
@@ -21,12 +20,7 @@ const workoutExerciseRoutes = require("./routes/workoutExerciseRoutes");
 
 // Setup the app and environment
 const app = express();
-const env = process.env.NODE_ENV || "development";
 const PORT = process.env.PORT || 3000;
-const dbConfig = dbConfigs[env];
-
-// Initialize the database
-const sequelize = new Sequelize(dbConfig);
 
 // Use middlewares
 app.use(express.json());
@@ -53,13 +47,13 @@ app.use("/workoutExercise", workoutExerciseRoutes);
 app.use(errorHandler);
 
 // Sync DB and start the app
-sequelize
+db.sequelize // This uses the sequelize instance from models/index.js
   .sync()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Server is up and running on port ${PORT}`);
+      console.log(`Server is up and rockin' on port ${PORT}! 🚀`);
     });
   })
   .catch((err) => {
-    console.error("Unable to connect to the database:", err);
+    console.error("Bummer! Unable to connect to the database:", err);
   });
